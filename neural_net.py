@@ -2,10 +2,16 @@ import numpy as np
 import itertools
 from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def sigmoid(x):
     return 1 /(1 + np.exp(-x))
+
+
+def derivative_sigmoid(x):
+    return sigmoid(x) / (1 - sigmoid(x))
 
 
 def get_cost_value(Y_hat, Y):
@@ -39,22 +45,31 @@ class NeuralNetwork:
         return history
 
 
-    def train(self, epochs=1):
+    def train(self, epochs=1, plot_data=True):
        
         # Cereate dataset
         X, y = make_circles()
         X_train, X_test, y_train, y_test = train_test_split(
                     X, y, test_size=0.33, random_state=42)
+        
+        
+        # Plot what we are going to model
+        if plot_data:
+            plt.scatter(x=X[:,0], y=X[:,1], label=y)
+            plt.show()
+
 
         # Feedforward
         history = self.feedforward(X_train)
 
         # Get cost value
         Y = y_train.reshape(y_train.shape[0], 1)
+        cost_val  = get_cost_value(history[2]['z'], Y) 
         import ipdb; ipdb.set_trace() # BREAKPOINT
-       
-        cost = get_cost_values() 
-    
+         
+        
+        # Calculate the Gradient
+
 
         
         pass
@@ -62,5 +77,5 @@ class NeuralNetwork:
 
 
 if __name__ == "__main__":
-    NeuralNetwork([2, 16, 16, 1]).train()
+    NeuralNetwork([2, 16, 16, 1]).train(plot_data=False)
     print(test(2, 5))
