@@ -2,6 +2,7 @@ import numpy as np
 import itertools
 from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
+import random
 
 
 def sigmoid(x):
