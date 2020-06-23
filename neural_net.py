@@ -19,6 +19,7 @@ def get_cost_value(Y_hat, Y):
         m = Y_hat.shape[1]
         # calculation of the cost according to the formula
         cost = -1 / m * (np.dot(Y, np.log(Y_hat).T) + np.dot(1 - Y, np.log(1 - Y_hat).T))
+
         return np.squeeze(cost)
 
 
@@ -44,6 +45,14 @@ class NeuralNetwork:
 
         return history
 
+    def back_propagate(self, history, Y, Y_hat):
+        
+        # Gradients we need to calculate 
+        # dW
+        # db
+        # dA
+        # dZ
+
 
     def train(self, epochs=1, plot_data=True):
        
@@ -51,7 +60,8 @@ class NeuralNetwork:
         X, y = make_circles()
         X_train, X_test, y_train, y_test = train_test_split(
                     X, y, test_size=0.33, random_state=42)
-        
+       
+        print(f'Shape of X train: {X_train.shape}')
         
         # Plot what we are going to model
         if plot_data:
@@ -63,14 +73,14 @@ class NeuralNetwork:
         history = self.feedforward(X_train)
 
         # Get cost value
-        Y = y_train.reshape(y_train.shape[0], 1)
-        cost_val  = get_cost_value(history[2]['z'], Y) 
-        import ipdb; ipdb.set_trace() # BREAKPOINT
+        Y_hat = history[2]['z'].T,
+        cost_val  = get_cost_value(Y_hat, y_train) 
          
         
-        # Calculate the Gradient
-
-
+        # backward propagation
+        gradients = back_propagate(history, Y, Y_hat)
+        
+        
         
         pass
     
