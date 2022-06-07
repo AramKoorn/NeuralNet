@@ -3,7 +3,7 @@ from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-# Nice explanation of the analytical formulas: https://datascience.stackexchange.com/questions/30676/role-derivative-of-sigmoid-function-in-neural-networks
+# Nice explanation of the analytical formula's: https://datascience.stackexchange.com/questions/30676/role-derivative-of-sigmoid-function-in-neural-networks
 
 
 def create_classifier():
@@ -35,10 +35,11 @@ class NeuralNetwork:
 
         a = X
         for idx, w in enumerate(self.weights):
-            a = w.dot(a) + self.biases[idx].T
+            a = w.dot(a.T) + self.biases[idx].T
             z = sigmoid(a)
 
             a_list.append(a)
+            a = z
             z_list.append(z)
 
         loss = z
@@ -59,7 +60,7 @@ class NeuralNetwork:
         for epoch in range(epochs):
             loss = []
             for idx in range(len(X_train)):
-                output_layer = self.feedforward(X_train[idx])
+                a, z, output_layer = self.feedforward(X_train[idx])
                 print(output_layer)
 
                 # Calculate loss
