@@ -1,19 +1,8 @@
 import numpy as np
-from sklearn.datasets import make_circles
-from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
 import matplotlib.pyplot as plt
 
 # Nice explanation of the analytical formula's: https://datascience.stackexchange.com/questions/30676/role-derivative-of-sigmoid-function-in-neural-networks
-
-
-def create_classifier():
-    # Cereate dataset
-    X, y = make_circles()
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.33, random_state=42
-    )
-    return X_train, X_test, y_train, y_test
 
 
 def sigmoid(x):
@@ -62,4 +51,3 @@ if __name__ == "__main__":
     y = np.expand_dims(y, axis=0)
     nn = NeuralNetwork([10, 5, 1])
     nn.train(X_train=X, y_train=y)
-    nn.weights[1].shape
