@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_classification
 import matplotlib.pyplot as plt
 
 # Nice explanation of the analytical formula's: https://datascience.stackexchange.com/questions/30676/role-derivative-of-sigmoid-function-in-neural-networks
@@ -20,77 +21,45 @@ def sigmoid(x):
 
 
 def derivative_sigmoid(x):
-    return sigmoid(x) / (1 - sigmoid(x))
+    return x * (1 - x)
 
 
 class NeuralNetwork:
     def __init__(self, layers):
         self.biases = [np.random.randn(y, 1) for y in layers[1:]]
-        self.weights = [np.random.randn(y, x) for x, y in zip(layers[:-1], layers[1:])]
+        self.weights = [np.random.randn(x, y) for x, y in zip(layers[:-1], layers[1:])]
 
-    def feedforward(self, X):
+    def back_propagate(self, x, y):
 
-        a_list = []
-        z_list = []
+        layer1 = np.expand_dims(sigmoid(x.dot(self.weights[0])), axis=0)
+        layer2 = sigmoid(layer1.dot(self.weights[1]))
 
-        a = X
-        for idx, w in enumerate(self.weights):
-            a = w.dot(a.T) + self.biases[idx].T
-            z = sigmoid(a)
+        outputError = y - layer2
+        delta = outputError * derivative_sigmoid(layer2)
+        self.weights[1] += layer1.T.dot(delta)
 
-            a_list.append(a)
-            a = z
-            z_list.append(z)
+        delta = delta.dot(self.weights[1].T) * derivative_sigmoid(layer1)
+        w1_adj = np.expand_dims(x, axis=0).T.dot(delta)
+        self.weights[0] += w1_adj
 
-        loss = z
+        return sum(outputError**2).sum()
 
-        return a_list, z_list, loss
-
-    def back_propagate(self, history, Y, Y_hat):
-
-        # Gradients we need to calculate
-        # dW
-        # db
-        # dA
-        # dZ
-        pass
-
-    def train(self, X_train, y_train, epochs=1, plot_data=True,):
+    def train(self, X_train, y_train, epochs=1000, plot_data=True):
 
         for epoch in range(epochs):
             loss = []
             for idx in range(len(X_train)):
-                a, z, output_layer = self.feedforward(X_train[idx])
-                print(output_layer)
-
-                # Calculate loss
-                l = (output_layer - y_train[idx])**2
+                l = self.back_propagate(x=X_train[idx], y=y_train[:, idx])
                 loss.append(l)
-
-                # Update weights by backpropagation
-                self.back_propagate()
-
-
-        # Feedforward
-        history = self.feedforward(X_train)
-
-        # Get cost value
-        Y_hat = (history[2]["z"].T,)
-        cost_val = get_cost_value(Y_hat, y_train)
-
-        # backward propagation
-        gradients = self.back_propagate(history, Y, Y_hat)
-
-        pass
+            print(sum(loss))
 
 
 if __name__ == "__main__":
 
-    # Create data
-    X_train, X_test, y_train, y_test = create_classifier()
-    plt.scatter(x=X_train[:, 0], y=X_train[:, 1], label=y_train)
-    plt.show()
-
-    nn = NeuralNetwork([2, 3, 1])
-    nn.train(X_train=X_train, y_train=y_train)
+    X, y = make_classification(
+        n_samples=50, n_features=10, n_classes=2, n_informative=2
+    )
+    y = np.expand_dims(y, axis=0)
+    nn = NeuralNetwork([10, 5, 1])
+    nn.train(X_train=X, y_train=y)
     nn.weights[1].shape
