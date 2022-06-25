@@ -21,12 +21,11 @@ class NeuralNetwork:
     def forward(self, x):
 
         layers = []
-        z = x
         for idx, l in enumerate(self.weights):
 
             # First linear transformation and than apply activation function
-            z = sigmoid(z.dot(self.weights[idx]))
-            layers.append(np.expand_dims(z, axis=0))
+            x = sigmoid(x.dot(self.weights[idx]))
+            layers.append(np.expand_dims(x, axis=0))
 
         return layers
 
