@@ -25,7 +25,7 @@ class NeuralNetwork:
         for idx, l in enumerate(self.weights):
 
             # First linear transformation and than apply activation function
-            z = (sigmoid(z.dot(self.weights[idx])))
+            z = sigmoid(z.dot(self.weights[idx]))
             layers.append(np.expand_dims(z, axis=0))
 
         return layers
@@ -40,7 +40,9 @@ class NeuralNetwork:
                 output_error = y - layers[-1]
                 delta = output_error * derivative_sigmoid(layers[-1])
             else:
-                delta = delta.dot(self.weights[-(idx)].T) * derivative_sigmoid(layers[-(idx + 1)])
+                delta = delta.dot(self.weights[-(idx)].T) * derivative_sigmoid(
+                    layers[-(idx + 1)]
+                )
 
             # print(delta.shape)
             adjustment = layers[-(idx + 2)].T.dot(delta)
@@ -48,30 +50,15 @@ class NeuralNetwork:
 
         return sum(output_error**2).sum()
 
-    def back_propagate(self, x, y):
-
-        layers = self.forward(x)
-        return self.back_propagation(layers=layers, x=x, y=y)
-
-        # layer1 = np.expand_dims(sigmoid(x.dot(self.weights[0])), axis=0)
-        # layer2 = sigmoid(layer1.dot(self.weights[1]))
-        #
-        # outputError = y - layer2
-        # delta = outputError * derivative_sigmoid(layer2)
-        # self.weights[1] += layer1.T.dot(delta)
-        #
-        # delta = delta.dot(self.weights[1].T) * derivative_sigmoid(layer1)
-        # w1_adj = np.expand_dims(x, axis=0).T.dot(delta)
-        # self.weights[0] += w1_adj
-        #
-        # return sum(outputError**2).sum()
-
     def train(self, X_train, y_train, epochs=1000, plot_data=True):
 
         for epoch in range(epochs):
             loss = []
             for idx in range(len(X_train)):
-                l = self.back_propagate(x=X_train[idx], y=y_train[:, idx])
+                layers = self.forward(x=X_train[idx])
+                l = self.back_propagation(
+                    layers=layers, x=X_train[idx], y=y_train[:, idx]
+                )
                 loss.append(l)
             print(sum(loss))
 
