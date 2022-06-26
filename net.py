@@ -24,27 +24,30 @@ class NeuralNetwork:
         for idx, l in enumerate(self.weights):
 
             # First linear transformation and than apply activation function
-            x = sigmoid(x.dot(self.weights[idx]))
-            layers.append(np.expand_dims(x, axis=0))
+            z = x.dot(self.weights[idx])
+            a = sigmoid(z)
+
+            layers.append((np.expand_dims(z, axis=0), np.expand_dims(a, axis=0)))
+            x = a
 
         return layers
 
     def back_propagation(self, layers: list, x, y):
 
         # input layer + hidden layer(s) + output layer
-        layers = [np.expand_dims(x, axis=0)] + layers
+        layers = [(np.expand_dims(x, axis=0), np.expand_dims(x, axis=0))] + layers
         for idx, w in enumerate(reversed(self.weights)):
 
             if idx == 0:
-                output_error = y - layers[-1]
-                delta = output_error * derivative_sigmoid(layers[-1])
+                output_error = y - layers[-1][1]
+                delta = output_error * derivative_sigmoid(layers[-1][1])
             else:
                 delta = delta.dot(self.weights[-(idx)].T) * derivative_sigmoid(
-                    layers[-(idx + 1)]
+                    layers[-(idx + 1)][1]
                 )
 
             # print(delta.shape)
-            adjustment = layers[-(idx + 2)].T.dot(delta)
+            adjustment = layers[-(idx + 2)][1].T.dot(delta)
             self.weights[-(idx + 1)] += adjustment
 
         return sum(output_error**2).sum()
@@ -69,4 +72,4 @@ if __name__ == "__main__":
     )
     y = np.expand_dims(y, axis=0)
     nn = NeuralNetwork([10, 5, 8, 7, 1])
-    nn.train(X_train=X, y_train=y)
+    nn.train(X_train=X, y_train=y, epochs=30)
