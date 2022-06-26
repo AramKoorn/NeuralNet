@@ -44,7 +44,7 @@ class NeuralNetwork:
         :return: list of tuples [(linear layer, activation layer)]
         '''
 
-        func_activation = lambda x: sigmoid if self.activation_output == "sigmoid" else softmax
+        func_activation = lambda x: sigmoid if x == "sigmoid" else softmax
 
         layers = []
         for idx, l in enumerate(self.weights):
@@ -70,7 +70,8 @@ class NeuralNetwork:
                     output_error = y - layers[-1][1]
                     delta = output_error * derivative_sigmoid(layers[-1][1])
                 if self.activation_output == "softmax":
-                    ...
+                    output_error = 2 * (layers[-1][1] - y) / layers[-1][1].shape[0] * derivative_softmax(layers[-1][0])
+                    delta = output_error * layers[-1][1]
 
             else:
                 delta = delta.dot(self.weights[-(idx)].T) * derivative_sigmoid(
@@ -102,5 +103,5 @@ if __name__ == "__main__":
         n_samples=50, n_features=10, n_classes=2, n_informative=2
     )
     y = np.expand_dims(y, axis=0)
-    nn = NeuralNetwork([10, 5, 8, 7, 1])
+    nn = NeuralNetwork([10, 5, 8, 7, 1], activation_output="sigmoid")
     nn.train(X_train=X, y_train=y, epochs=30)
