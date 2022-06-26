@@ -19,6 +19,10 @@ class NeuralNetwork:
         self.weights = [np.random.randn(x, y) for x, y in zip(layers[:-1], layers[1:])]
 
     def forward(self, x):
+        '''
+        :param x: input layer
+        :return: list of tuples [(linear layer, activation layer)]
+        '''
 
         layers = []
         for idx, l in enumerate(self.weights):
