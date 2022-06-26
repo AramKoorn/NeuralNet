@@ -6,9 +6,13 @@ import matplotlib.pyplot as plt
 
 
 def softmax(x):
-    # Numerically stable with large exponentials
     exps = np.exp(x - x.max())
     return exps / np.sum(exps, axis=0)
+
+
+def derivative_softmax(x):
+    exps = np.exp(x - x.max())
+    return exps / np.sum(exps, axis=0) * (1 - exps / np.sum(exps, axis=0))
 
 
 def sigmoid(x):
@@ -24,6 +28,15 @@ class NeuralNetwork:
         self.biases = [np.random.randn(y, 1) for y in layers[1:]]
         self.weights = [np.random.randn(x, y) for x, y in zip(layers[:-1], layers[1:])]
         self.activation_output = activation_output
+        self.activation_layers = self._activation_layers()
+
+    def _activation_layers(self):
+        act_layers = ["sigmoid" for _ in range(len(self.weights) - 1)]
+        if self.activation_output == "sigmoid":
+            act_layers += ["sigmoid"]
+        else:
+            act_layers += ["softmax"]
+        return act_layers
 
     def forward(self, x):
         '''
@@ -31,12 +44,15 @@ class NeuralNetwork:
         :return: list of tuples [(linear layer, activation layer)]
         '''
 
+        func_activation = lambda x: sigmoid if self.activation_output == "sigmoid" else softmax
+
         layers = []
         for idx, l in enumerate(self.weights):
 
             # First linear transformation and than apply activation function
             z = x.dot(self.weights[idx])
-            a = sigmoid(z)
+            f = func_activation(self.activation_layers[idx])
+            a = f(z)
 
             layers.append((np.expand_dims(z, axis=0), np.expand_dims(a, axis=0)))
             x = a
